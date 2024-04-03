@@ -16,10 +16,12 @@ const Table = () => {
     setRows([...rows, { id: rows.length + 1,character: inputValue, name: '', age: '' }]);
   };
 
+  // get new row input value and puts it in inputValue state
   const handleNewRow = (event) => {
     setInputValue(event.target.value);
   };
 
+  
   const handleChange = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
