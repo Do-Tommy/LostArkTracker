@@ -4,7 +4,7 @@ import apiRouter from './api/index.js';
 import session from 'express-session'
 import dotenv from 'dotenv';
 import passport from 'passport';
-import './strategies/local-strategy.js';
+import mongoose from 'mongoose';
 dotenv.config();
 
 const { 
@@ -14,10 +14,12 @@ const {
 
 const app = express();
 
+mongoose.connect('mongodb://localhost/lost_ark_tracker')
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.error(`Error connecting to MongoDB: ${err}`));
+
 app.use(morgan('dev'));
-
 app.use(express.json());
-
 app.use(session({
   secret: SESSION_SECRET,
   saveUninitialized: false,
@@ -28,19 +30,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.post('/authenticate', passport.authenticate('local'), (req, res) => {
-  res.send({message: "Succesfully Authenticated"})
-});
-
-app.post('/logout', (req, res) => {
-  if (!req.user) return res.sendStatus(401);
-  req.logOut((err) => {
-    if (err) return res.sendStatus(400);
-  });
-  res.sendStatus(200);
-});
-
 app.use('/api', apiRouter);
 
 app.listen(PORT, () => {
