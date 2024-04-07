@@ -33,6 +33,14 @@ app.post('/authenticate', passport.authenticate('local'), (req, res) => {
   res.send({message: "Succesfully Authenticated"})
 });
 
+app.post('/logout', (req, res) => {
+  if (!req.user) return res.sendStatus(401);
+  req.logOut((err) => {
+    if (err) return res.sendStatus(400);
+  });
+  res.sendStatus(200);
+});
+
 app.use('/api', apiRouter);
 
 app.listen(PORT, () => {
