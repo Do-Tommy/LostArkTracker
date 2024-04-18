@@ -1,12 +1,16 @@
 import express from 'express';
 import morgan from 'morgan';
-import apiRouter from './api/index.js';
 import session from 'express-session'
 import dotenv from 'dotenv';
 import passport from 'passport';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import apiRouter from './api/index.js';
 dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const { 
   PORT = 8080,
@@ -30,9 +34,11 @@ app.use(session({
   },
   store: MongoStore.create({ client: mongoose.connection.getClient() })
 }));
-
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(express.static(path.join(__dirname, "..", "client", "dist")))
+
 app.use('/api', apiRouter);
 
 app.listen(PORT, () => {
